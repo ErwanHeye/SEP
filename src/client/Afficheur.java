@@ -7,13 +7,18 @@ import service.GenerateurAsync;
 
 public class Afficheur implements ObservateurGenerateur {
 
-	// ou  Future<Integer> ?
+	private String name;
+
+	public Afficheur(String n) {
+		name = n;
+	}
+	
 	public void update(GenerateurAsync g) {
 		ScheduledFuture<Integer> valueFuture= g.getValue();
 		int result;
 		try {
 			result = valueFuture.get();
-			System.out.println(result);
+			System.out.println("GetValue pour : " +name + " : "+ result);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} catch (ExecutionException e) {

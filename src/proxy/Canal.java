@@ -1,5 +1,6 @@
 package proxy;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ScheduledFuture;
@@ -12,16 +13,18 @@ import service.GenerateurObservateurAsync;
 
 public class Canal implements GenerateurAsync, GenerateurObservateurAsync {
 
-	// Scheduler a sortir de la classe, un seul pour tous les canaux
 	
 	private ObservateurGenerateur observateur;
 	private Generateur generateur;
 
 	
-	//Future<Integer>
+	public Canal(ObservateurGenerateur og,Generateur g ) {
+		observateur=og;
+		generateur =g;
+	}
+	
 	public ScheduledFuture<Void> update(Generateur g){
 		Canal thisObject =this;
-		System.out.println("update dans canal");
 		ScheduledFuture<Void> result =Main.scheduler.schedule(new Callable<Void>() {
 			public Void call() {
 				observateur.update(thisObject);
@@ -32,6 +35,18 @@ public class Canal implements GenerateurAsync, GenerateurObservateurAsync {
 		return result;
 		
 	}
+	
+	
+	public ScheduledFuture <Integer> getValue(){
+		ScheduledFuture<Integer> result = Main.scheduler.schedule(new Callable<Integer>() {
+			public Integer call() {
+				return generateur.getValue();
+			}
+		},getRandom(),MILLISECONDS);
+		
+		return result;
+	}
+	
 	public void attach(ObservateurGenerateur o) {
 		observateur = o;
 	}
@@ -46,18 +61,7 @@ public class Canal implements GenerateurAsync, GenerateurObservateurAsync {
 		
 	}
 	
-	
-	public ScheduledFuture <Integer> getValue(){
-		ScheduledFuture<Integer> result = Main.scheduler.schedule(new Callable<Integer>() {
-			public Integer call() {
-				return generateur.getValue();
-			}
-		},20000,MILLISECONDS);
-		
-		return result;
-	}
-	
 	public int getRandom() {
-		return (int)Math.random() *(500);
+		return (int)(Math.random() *(500));
 	}
 }

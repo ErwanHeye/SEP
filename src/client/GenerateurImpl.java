@@ -1,33 +1,29 @@
 package client;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ScheduledFuture;
-
 import service.GenerateurObservateurAsync;
+import strategy.AlgoDiffusion;
 
 public class GenerateurImpl implements Generateur {
-	private int value;
-	private GenerateurObservateurAsync observateur;
+	private AlgoDiffusion algo;
+	private String name;
+	
+	public GenerateurImpl(AlgoDiffusion alg, String n) {
+		algo = alg;
+		name=n;
+	}
 	
 	public void attach(GenerateurObservateurAsync o) {
-		observateur=o;
+		algo.attach(o);
 	}
 	public void detach(GenerateurObservateurAsync o) {
-		observateur=null;
+		//todo
 	}
 	public int getValue(){
-		return value;
+		return algo.getValue();
 	}
 	
 	public void tick() {
-		value +=1;
-		ScheduledFuture<Void>result =observateur.update(this);
-		try {
-			result.get();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			e.printStackTrace();
-		}
+		algo.execute(this);
+		
 	}
 }
